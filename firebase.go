@@ -4,32 +4,39 @@ import (
 	"context"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/db"
+	"firebase.google.com/go/messaging"
 	"fmt"
 	"google.golang.org/api/option"
 )
 
 type Firebase struct {
-	*db.Client
+	database  *db.Client
+	messaging *messaging.Client
 }
 
-var database Firebase
+var fb Firebase
 
-func (db *Firebase) Connect() error {
+func connect() error {
 	ctx := context.Background()
-	opt := option.WithCredentialsFile("healthier-19122-firebase-adminsdk.json")
+	opt := option.WithCredentialsFile("credentials.json")
 	config := &firebase.Config{DatabaseURL: "https://healthier-19122-default-rtdb.firebaseio.com/"}
+
 	app, err := firebase.NewApp(ctx, config, opt)
 	if err != nil {
 		return fmt.Errorf("error initializing app: %v", err)
 	}
-	client, err := app.Database(ctx)
+
+	dbClient, err := app.Database(ctx)
 	if err != nil {
 		return fmt.Errorf("error initializing database: %v", err)
 	}
-	db.Client = client
-	return nil
-}
+	fb.database = dbClient
 
-func FirebaseDB() *Firebase {
-	return &database
+	messageClient, err := app.Messaging(context.Background())
+	if err != nil {
+		return err
+	}
+	fb.messaging = messageClient
+
+	return nil
 }
