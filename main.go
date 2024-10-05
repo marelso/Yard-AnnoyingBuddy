@@ -6,6 +6,7 @@ import (
 	"log"
 	"sync"
 	"time"
+	"yard-AnnoyingBuddy/domain"
 )
 
 func main() {
@@ -22,9 +23,9 @@ func main() {
 			log.Fatalf("Failed to fetch entries: %v\n", err)
 		}
 
-		for id, device := range data.List {
+		for id, device := range data {
 			wg.Add(1)
-			go func(deviceID string, d Device) {
+			go func(deviceID string, d domain.Device) {
 				defer wg.Done()
 				processDevice(deviceID, d)
 			}(id, device)
@@ -37,7 +38,7 @@ func main() {
 	}
 }
 
-func processDevice(id string, device Device) {
+func processDevice(id string, device domain.Device) {
 	fmt.Printf("Now processing device : %s\n", id)
 	SendPush("Title", "Message body", "cT9UlTL-TgaHjBH518zyVH:APA91bE85WIpjriKUSWolNwjAXySykoTXhlJ_uTsTxszssAvjqPWmRB9seB9ijGbXl7K0F5FPHScE7PynAqG6FVmzobbtZDAMnQl_TLmrfmPsMcNZmlB-w5OBURs5ro_lSXnqMmMHDYO")
 }
